@@ -5,7 +5,7 @@ import logging
 load_dotenv()
 
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
-DISCORD_USER_ID = os.getenv('DISCORD_USER_ID')
+DISCORD_CHANNEL_ID = int(os.getenv('DISCORD_CHANNEL_ID'))  # Assurez-vous que l'ID du canal est un entier
 RSS_FEED_URLS = os.getenv('RSS_FEED_URLS').split(',')
 
 # Création du répertoire logs si nécessaire

@@ -1,7 +1,7 @@
 import discord
 import asyncio
 import logging
-from config.config import DISCORD_USER_ID, RSS_FEED_URLS
+from config.config import DISCORD_CHANNEL_ID, RSS_FEED_URLS
 from utils.functions import get_rss_feed, read_last_entry, write_last_entry
 
 class MyBot(discord.Client):
@@ -9,8 +9,11 @@ class MyBot(discord.Client):
         logging.info(f'Logged in as {self.user}')
         print(f'We have logged in as {self.user}')
 
-        self.user_to_notify = await self.fetch_user(DISCORD_USER_ID)
-        self.check_rss_task = self.loop.create_task(self.check_rss_feeds())
+        self.channel_to_notify = self.get_channel(DISCORD_CHANNEL_ID)
+        if self.channel_to_notify is None:
+            logging.error(f"Channel with ID {DISCORD_CHANNEL_ID} not found")
+        else:
+            self.check_rss_task = self.loop.create_task(self.check_rss_feeds())
 
     async def check_rss_feeds(self):
         await self.wait_until_ready()
@@ -23,9 +26,10 @@ class MyBot(discord.Client):
                     last_entry_id = await read_last_entry(feed_url)
 
                     if latest_entry.id != last_entry_id:
-                        await self.user_to_notify.send(f"**{latest_entry.title}**\n{latest_entry.link}")
-                        await write_last_entry(feed_url, latest_entry.id)
-                        logging.info("New entry sent from %s: %s", feed_url, latest_entry.title)
+                        if self.channel_to_notify:
+                            await self.channel_to_notify.send(f"**{latest_entry.title}**\n{latest_entry.link}")
+                            await write_last_entry(feed_url, latest_entry.id)
+                            logging.info("New entry sent from %s: %s", feed_url, latest_entry.title)
                     else:
                         logging.info("No new entry found for %s.", feed_url)
                 else:

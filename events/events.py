@@ -5,6 +5,10 @@ from config.config import DISCORD_CHANNEL_ID, RSS_FEED_URLS
 from utils.functions import get_rss_feed, read_last_entry, write_last_entry
 
 class MyBot(discord.Client):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.first_run = True
+
     async def on_ready(self):
         logging.info(f'Logged in as {self.user}')
         print(f'We have logged in as {self.user}')
@@ -21,9 +25,10 @@ class MyBot(discord.Client):
             for feed_url in RSS_FEED_URLS:
                 logging.info("Checking RSS feed: %s", feed_url)
                 feed_entries = get_rss_feed(feed_url)
+
                 if feed_entries:
-                    latest_entry = feed_entries[0]
                     last_entry_id = await read_last_entry(feed_url)
+                    latest_entry = feed_entries[0]
 
                     if latest_entry.id != last_entry_id:
                         if self.channel_to_notify:
@@ -35,7 +40,10 @@ class MyBot(discord.Client):
                 else:
                     logging.warning("No entries found in the RSS feed for %s.", feed_url)
 
-            await asyncio.sleep(900)  # Vérifie toutes les 15 minutes
+            if self.first_run:
+                self.first_run = False
+
+            await asyncio.sleep(120)  # Vérifie toutes les 2 minutes
 
     async def on_message(self, message):
         if message.author == self.user:

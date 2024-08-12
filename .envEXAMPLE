@@ -1,3 +1,4 @@
+DEBUG_MODE=false
 DISCORD_TOKEN=your_discord_token_here
 DISCORD_CHANNEL_ID=your_channel_id_here
 RSS_FEED_URL=your_rss_feed_url_here

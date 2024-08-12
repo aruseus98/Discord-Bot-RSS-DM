@@ -2,6 +2,10 @@
 
 This project is a simple Discord bot that monitors one or more RSS feeds and sends notifications for new entries directly to a specific user on Discord.  
 
+## 2 Bot version
+* Main branch : bot rss DM the user 
+* Setup bot to send to channel : bot rss send message to a specific channel in a server discord
+
 ## Prerequisites
 * Python 3.9 or higher  
 * A Discord token  
